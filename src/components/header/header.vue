@@ -25,6 +25,7 @@ export default {
   text-align: center;
   background: #f3f5f7;
   font-size: 24px;
+  border-bottom: 1px solid rgba(0,0,0,0.3);
   .icon-chat {
     font-size: 20px;
   }
