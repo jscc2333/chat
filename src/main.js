@@ -3,10 +3,11 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
+import socket from 'vue-socket.io';
 Vue.config.productionTip = false;
 
-router.push('publicroom');
-
+router.push('login');
+Vue.use(socket, 'http://localhost:3000');
 import './common/less/index.less';
 
 /* eslint-disable no-new */
@@ -16,5 +17,10 @@ new Vue({
   template: '<App/>',
   components: {
     App
+  },
+  sockets: {
+    connect() {
+      console.log('socket connected');
+    }
   }
 });
