@@ -3,8 +3,13 @@
     <h1 class="title">公共聊天室</h1>
     <div class="message-box">
       <ul>
-        <li v-for="(msg,msgIndex) in messageList" :key="msgIndex" class="msg">
+        <li v-for="(msgObj,msgIndex) in receiveList" :key="msgIndex" class="msgReceive">
+          <span class="o-username">{{msgObj.username}}</span>
+          <span class="text">{{msgObj.msg}}</span>
+        </li>
+        <li v-for="(msg,msgIndex) in sendList" :key="msgIndex" class="msgSend">
           <span class="text">{{msg}}</span>
+          <span class="username">{{username}}</span>
         </li>
       </ul>
     </div>
@@ -24,12 +29,18 @@ export default {
   data() {
     return {
       message: '',
-      messageList: []
+      sendList: [],
+      receiveList: [{ 'username': 'aron', 'msg': 'hahahahah' }]
     };
+  },
+  props: {
+    username: {
+      type: String
+    }
   },
   methods: {
     sendMessage() {
-      this.messageList.push(this.message);
+      this.sendList.push(this.message);
       this.message = '';
     }
   }
@@ -54,8 +65,9 @@ export default {
     bottom: 40px;
     padding: 0 0 0 5px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-    .msg {
+    .msgSend,.msgReceive {
       margin-bottom: 10px;
+      padding:0 5px;
       line-height: 20px;
       .text {
         display: inline-block;
@@ -64,6 +76,9 @@ export default {
         border-radius: 20px;
         font-size: 16px;
       }
+    }
+    .msgSend{
+      text-align: right;
     }
   }
   .message-input {

@@ -1,5 +1,4 @@
 <template>
-  <transition name="slide">
     <div class="login" v-show="flag">
       <div class="logo-wrapper">
         <h1 class="title">Chat</h1>
@@ -33,7 +32,6 @@
         </form>
       </div>
     </div>
-  </transition>
 </template>
 
 <script type="text/ecmascript-6">
@@ -92,7 +90,7 @@ export default {
     },
     needJump(status = false) {
       this.flag = !status;
-      // router.push('publicroom');
+      router.push(`publicroom/${this.name}`);
     }
   },
   sockets: {
@@ -126,10 +124,6 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  transition: all .5s linear;
-  &.slide-leave-active {
-    transform: translate3d(100%, 0, 0);
-  }
   .logo-wrapper {
     line-height: 50px;
     width: 100%;

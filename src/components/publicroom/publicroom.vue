@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-header></v-header>
+    <v-header :username="username"></v-header>
     <div class="public-room">
       <div class="user-wrapper" ref="userWrapper">
         <ul>
@@ -10,7 +10,7 @@
         </ul>
       </div>
       <div class="room-wrapper">
-        <chatbox></chatbox>
+        <chatbox :username="username"></chatbox>
       </div>
     </div>
   </div>
@@ -22,11 +22,20 @@ import header from '../header/header';
 import chatbox from '../chatbox/chatbox';
 
 export default {
+  data() {
+    return {
+      username: ''
+    };
+  },
+  watch: {
+    '$route': 'fetchData'
+  },
   components: {
     'v-header': header,
     chatbox
   },
   created() {
+    this.username = this.$route.params.username;
     this.$nextTick(() => {
       if (!this.scroll) {
         this.scroll = new BScroll(this.$refs.userWrapper, {
@@ -34,6 +43,12 @@ export default {
         });
       }
     });
+  },
+  methods: {
+    fetchData() {
+      console.log('here');
+      this.username = this.$route.params.username;
+    }
   }
 };
 </script>
@@ -51,7 +66,7 @@ export default {
     background: #f3f5f7;
     .user-item {
       display: table;
-      
+
       padding: 0 12px;
       line-height: 54px;
       width: 56px;

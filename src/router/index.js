@@ -12,7 +12,7 @@ export default new Router({
     component: login
   },
   {
-    path: '/publicroom',
+    path: '/publicroom/:username',
     name: 'publicroom',
     component: publicroom
   }
