@@ -45,15 +45,21 @@ io.on('connection', (socket) => {
           if (users[0].password !== user.password) {
             socket.emit('loginMsg', output(false, null, '密码错误，请重试'));
           } else {
-            User.find((err, users) => {
+            User.update({
+              username: user.username
+            }, {
+              $set: {
+                is_online: true
+              }
+            }, (err) => {
               if (err) {
                 console.log(err);
+              } else {
+                socket.emit('loginMsg', output(true, {
+                  username: users[0].username
+                }, '登录成功'));
               }
-              console.log(users);
             });
-            socket.emit('loginMsg', output(true, {
-              username: users[0].username
-            }, '登录成功'));
           }
         }
       }
@@ -73,7 +79,8 @@ io.on('connection', (socket) => {
         } else {
           let data = {
             username: temp.username,
-            password: temp.password
+            password: temp.password,
+            is_online: false
           };
           let user = new User(data);
           console.log(user);
@@ -92,12 +99,21 @@ io.on('connection', (socket) => {
     });
   });
   // 响应获取在线用户列表事件
-  socket.on('fetchList', (data) => {
-    User.find((err, users) => {
+  socket.on('fetchList', (user) => {
+    User.find({
+      'is_online': true,
+      'username': {
+        '$ne': user.username
+      }
+    }, {
+      'username': 1
+    }, (err, users) => {
+      console.log(users);
       if (err) {
         console.log(err);
+      } else {
+        socket.emit('provList', users);
       }
-      socket.send(output(false, users, '请求成功'));
     });
   });
 });

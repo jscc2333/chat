@@ -1,37 +1,37 @@
 <template>
-    <div class="login" v-show="flag">
-      <div class="logo-wrapper">
-        <h1 class="title">Chat</h1>
-        <i class="icon-chat"></i>
-      </div>
-      <div class="login-wrapper">
-        <form>
-          <div class="name">
-            <label for="name">用户名:</label>
-            <input type="text" id="name" v-model="name" placeholder="请输入你的用户名" autofocus="true">
-          </div>
-          <div class="password">
-            <label for="password">密码:</label>
-            <input type="password" id="password" v-model="password" @keyup.enter="submit" placeholder="请输入密码">
-          </div>
-          <transition name="move">
-            <div class="confirm-password" v-show="regist">
-              <label for="cPassword">确认密码:</label>
-              <input type="password" id="cPassword" v-model="cPassword" @keyup.enter="submit" placeholder="确认密码">
-            </div>
-          </transition>
-          <div class="login-select">
-            <span class="confirm" @click="submit">{{optionButton}}</span>
-            <span class="regist" @click="needRegist">{{option}}</span>
-          </div>
-          <div class="message">
-            <transition name="fade">
-              <span v-show="message" class="text">{{message}}</span>
-            </transition>
-          </div>
-        </form>
-      </div>
+  <div class="login" v-show="flag">
+    <div class="logo-wrapper">
+      <h1 class="title">Chat</h1>
+      <i class="icon-chat"></i>
     </div>
+    <div class="login-wrapper">
+      <form>
+        <div class="name">
+          <label for="name">用户名:</label>
+          <input type="text" id="name" v-model="name" placeholder="请输入你的用户名" autofocus="true">
+        </div>
+        <div class="password">
+          <label for="password">密码:</label>
+          <input type="password" id="password" v-model="password" @keyup.enter="submit" placeholder="请输入密码">
+        </div>
+        <transition name="move">
+          <div class="confirm-password" v-show="regist">
+            <label for="cPassword">确认密码:</label>
+            <input type="password" id="cPassword" v-model="cPassword" @keyup.enter="submit" placeholder="确认密码">
+          </div>
+        </transition>
+        <div class="login-select">
+          <span class="confirm" @click="submit">{{optionButton}}</span>
+          <span class="regist" @click="needRegist">{{option}}</span>
+        </div>
+        <div class="message">
+          <transition name="fade">
+            <span v-show="message" class="text">{{message}}</span>
+          </transition>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">

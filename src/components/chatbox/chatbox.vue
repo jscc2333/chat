@@ -42,6 +42,12 @@ export default {
     sendMessage() {
       this.sendList.push(this.message);
       this.message = '';
+
+      let data = {
+        'username': this.username,
+        'meesage': this.message
+      };
+      // this.$socket
     }
   }
 };
@@ -65,9 +71,10 @@ export default {
     bottom: 40px;
     padding: 0 0 0 5px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-    .msgSend,.msgReceive {
+    .msgSend,
+    .msgReceive {
       margin-bottom: 10px;
-      padding:0 5px;
+      padding: 0 5px;
       line-height: 20px;
       .text {
         display: inline-block;
@@ -77,7 +84,7 @@ export default {
         font-size: 16px;
       }
     }
-    .msgSend{
+    .msgSend {
       text-align: right;
     }
   }

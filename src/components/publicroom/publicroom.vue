@@ -4,8 +4,8 @@
     <div class="public-room">
       <div class="user-wrapper" ref="userWrapper">
         <ul>
-          <li v-for="(item,index) in 20" :key="index" class="user-item">
-            <span class="name">user{{item}}</span>
+          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item">
+            <span class="name">{{user}}</span>
           </li>
         </ul>
       </div>
@@ -24,7 +24,8 @@ import chatbox from '../chatbox/chatbox';
 export default {
   data() {
     return {
-      username: ''
+      username: '',
+      userList: []
     };
   },
   watch: {
@@ -36,6 +37,7 @@ export default {
   },
   created() {
     this.username = this.$route.params.username;
+    this.$socket.emit('fetchList', { 'username': this.username });
     this.$nextTick(() => {
       if (!this.scroll) {
         this.scroll = new BScroll(this.$refs.userWrapper, {
@@ -48,6 +50,17 @@ export default {
     fetchData() {
       console.log('here');
       this.username = this.$route.params.username;
+    }
+  },
+  sockets: {
+    provList(data) {
+      if (!data.length) {
+        console.log('当前没有用户在线');
+      } else {
+        data.forEach((user) => {
+          this.userList.push(user.username);
+        });
+      }
     }
   }
 };
