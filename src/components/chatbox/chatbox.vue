@@ -51,9 +51,7 @@ export default {
   },
   sockets: {
     broadMessage(data) {
-      console.log(data);
       this.receiveList.push(data);
-      console.log(this.receiveList);
     }
   }
 };

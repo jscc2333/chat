@@ -18,8 +18,13 @@ export default {
       type: String
     }
   },
+  destroyed() {
+    console.log(1);
+    this.signout();
+  },
   methods: {
     signout() {
+      this.$socket.emit('iamOffline', { 'username': this.username });
       router.push('/login');
     }
   }

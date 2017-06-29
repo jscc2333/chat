@@ -36,6 +36,7 @@
 
 <script type="text/ecmascript-6">
 import router from '../../router';
+import { loadFromLocal, saveToLocal } from '../../common/js/store.js';
 
 const OPTION_TYPE_REGSIT = true;
 
@@ -50,6 +51,15 @@ export default {
       optionType: OPTION_TYPE_REGSIT,
       flag: true
     };
+  },
+  watch: {
+    name: function () {
+      this.password = '';
+      let password = loadFromLocal(this.name);
+      if (password) {
+        this.password = password;
+      }
+    }
   },
   computed: {
     option() {
@@ -69,6 +79,7 @@ export default {
         if (!(this.name && this.password)) {
           return;
         }
+        saveToLocal(this.name, this.password);
         this.$socket.emit('login', user);
       } else {
         if (!(this.name && this.password && this.cPassword)) {

@@ -38,6 +38,7 @@ export default {
   created() {
     this.username = this.$route.params.username;
     this.$socket.emit('fetchList', { 'username': this.username });
+    this.$socket.emit('iamOnline', { 'username': this.username });
     this.$nextTick(() => {
       if (!this.scroll) {
         this.scroll = new BScroll(this.$refs.userWrapper, {
@@ -60,6 +61,17 @@ export default {
         data.forEach((user) => {
           this.userList.push(user.username);
         });
+      }
+    },
+    someoneOnline(user) {
+      this.userList.push(user.username);
+    },
+    someoneOffline(user) {
+      console.log('offline');
+      console.log(`${this.userList} ${user.username}`);
+      let index = this.userList.indexOf(user.username);
+      if (index !== -1) {
+        this.userList.splice(index, 1);
       }
     }
   }

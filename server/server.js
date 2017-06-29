@@ -32,7 +32,6 @@ app.get('/', function (req, res) {
 io.on('connection', (socket) => {
   // 响应登录事件
   socket.on('login', (user) => {
-    console.log(user);
     User.find({
       'username': user.username
     }, (err, users) => {
@@ -83,7 +82,6 @@ io.on('connection', (socket) => {
             is_online: false
           };
           let user = new User(data);
-          console.log(user);
           user.save((err) => {
             if (err) {
               socket.emit('registMsg', output(false, null, '用户注册失败'));
@@ -108,11 +106,30 @@ io.on('connection', (socket) => {
     }, {
       'username': 1
     }, (err, users) => {
-      console.log(users);
       if (err) {
         console.log(err);
       } else {
         socket.emit('provList', users);
+      }
+    });
+  });
+
+  socket.on('iamOnline', (user) => {
+    socket.broadcast.emit('someoneOnline', user);
+  });
+
+  socket.on('iamOffline', (user) => {
+    User.update({
+      username: user.username
+    }, {
+      $set: {
+        is_online: false
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        socket.broadcast.emit('someoneOffline', user);
       }
     });
   });
