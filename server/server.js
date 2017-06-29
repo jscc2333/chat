@@ -116,6 +116,10 @@ io.on('connection', (socket) => {
       }
     });
   });
+
+  socket.on('sendMessage', (data) => {
+    socket.broadcast.emit('broadMessage', data);
+  });
 });
 
 http.listen(3000, () => {

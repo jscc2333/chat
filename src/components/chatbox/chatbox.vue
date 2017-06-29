@@ -5,7 +5,7 @@
       <ul>
         <li v-for="(msgObj,msgIndex) in receiveList" :key="msgIndex" class="msgReceive">
           <span class="o-username">{{msgObj.username}}</span>
-          <span class="text">{{msgObj.msg}}</span>
+          <span class="text">{{msgObj.message}}</span>
         </li>
         <li v-for="(msg,msgIndex) in sendList" :key="msgIndex" class="msgSend">
           <span class="text">{{msg}}</span>
@@ -30,7 +30,7 @@ export default {
     return {
       message: '',
       sendList: [],
-      receiveList: [{ 'username': 'aron', 'msg': 'hahahahah' }]
+      receiveList: []
     };
   },
   props: {
@@ -40,14 +40,20 @@ export default {
   },
   methods: {
     sendMessage() {
-      this.sendList.push(this.message);
-      this.message = '';
-
       let data = {
         'username': this.username,
-        'meesage': this.message
+        'message': this.message
       };
-      // this.$socket
+      this.$socket.emit('sendMessage', data);
+      this.sendList.push(this.message);
+      this.message = '';
+    }
+  },
+  sockets: {
+    broadMessage(data) {
+      console.log(data);
+      this.receiveList.push(data);
+      console.log(this.receiveList);
     }
   }
 };
