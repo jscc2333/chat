@@ -59,6 +59,9 @@ export default {
       if (password) {
         this.password = password;
       }
+    },
+    '$route': function () {
+      alert(1);
     }
   },
   computed: {

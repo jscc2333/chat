@@ -1,15 +1,17 @@
 <template>
   <div class="chat-box">
     <h1 class="title">公共聊天室</h1>
-    <div class="message-box">
+    <div class="notice-wrapper">
+      <transition name="fade">
+        <h2 class="notice" v-show="notice">{{newuser}}上线了</h2>
+      </transition>
+    </div>
+    <div class="message-box" ref="messageBox">
       <ul>
-        <li v-for="(msgObj,msgIndex) in receiveList" :key="msgIndex" class="msgReceive">
-          <span class="o-username">{{msgObj.username}}</span>
+        <li v-for="(msgObj,msgIndex) in messageList" :key="msgIndex" class="message-list message-list-hook" :class="{'current':msgObj.current}">
+          <span class="username" v-if="!msgObj.current">{{msgObj.username}}</span>
           <span class="text">{{msgObj.message}}</span>
-        </li>
-        <li v-for="(msg,msgIndex) in sendList" :key="msgIndex" class="msgSend">
-          <span class="text">{{msg}}</span>
-          <span class="username">{{username}}</span>
+          <span class="username" v-if="msgObj.current">{{msgObj.username}}</span>
         </li>
       </ul>
     </div>
@@ -25,17 +27,46 @@
 </template>
 
 <script type="text/ecmascript-6">
+import BScroll from 'better-scroll';
+
 export default {
   data() {
     return {
       message: '',
-      sendList: [],
-      receiveList: []
+      messageList: []
     };
   },
   props: {
     username: {
       type: String
+    },
+    newuser: {
+      type: String
+    }
+  },
+  watch: {
+    newuser: function () {
+      setTimeout(() => {
+        this.$root.eventHub.$emit('timeover');
+      }, 2000);
+    }
+  },
+  created() {
+    this.$nextTick(() => {
+      if (!this.scroll) {
+        console.log(1);
+        this.scroll = new BScroll(this.$refs.messageBox, {
+          scrollY: true,
+          click: true
+        });
+      }
+    });
+  },
+  computed: {
+    notice() {
+      if (this.newuser) {
+        return true;
+      }
     }
   },
   methods: {
@@ -45,13 +76,26 @@ export default {
         'message': this.message
       };
       this.$socket.emit('sendMessage', data);
-      this.sendList.push(this.message);
+      data.current = true;
+      this.messageList.push(data);
       this.message = '';
+      this.$nextTick(() => {
+        this.scroll.refresh();
+        let messagelist = this.$refs.messageBox.getElementsByClassName('message-list-hook');
+        let el = messagelist[this.messageList.length - 1];
+        this.scroll.scrollToElement(el);
+      });
     }
   },
   sockets: {
     broadMessage(data) {
-      this.receiveList.push(data);
+      this.messageList.push(data);
+      this.$nextTick(() => {
+        this.scroll.refresh();
+        let messagelist = this.$refs.messageBox.getElementsByClassName('message-list-hook');
+        let el = messagelist[this.messageList.length - 1];
+        this.scroll.scrollToElement(el);
+      });
     }
   }
 };
@@ -65,31 +109,54 @@ export default {
     text-align: center;
     font-size: 14px;
     color: rgb(7, 17, 27);
-    margin-bottom: 7px;
+  }
+  .notice-wrapper {
+    margin: 3px 0 7px 0;
+    width: 100%;
+    text-align: center;
+    .notice {
+      display: inline;
+      padding: 0 3px;
+      line-height: 12px;
+      border-radius: 3px;
+      font-size: 10px;
+      background: #f3f5f7;
+      &.fade-enter {
+        opacity: 0;
+      }
+      &.fade-enter-active {
+        transition: all .5s ease;
+      }
+    }
   }
   .message-box {
     position: absolute;
     top: 25px;
-    left: 85px;
+    left: 80px;
     right: 0;
     bottom: 40px;
     padding: 0 0 0 5px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-    .msgSend,
-    .msgReceive {
+    overflow: hidden;
+    .message-list {
       margin-bottom: 10px;
       padding: 0 5px;
       line-height: 20px;
+      &.current {
+        text-align: right;
+      }
       .text {
         display: inline-block;
+        vertical-align: top;
         padding: 5px 10px;
+        max-width: 200px;
+        word-wrap: break-word;
+        word-break: normal;
+        text-align: left;
         background: #f3f5f7;
         border-radius: 20px;
         font-size: 16px;
       }
-    }
-    .msgSend {
-      text-align: right;
     }
   }
   .message-input {
@@ -97,7 +164,7 @@ export default {
     display: flex;
     bottom: 0;
     right: 0;
-    left: 85px;
+    left: 80px;
     box-sizing: border-box;
     padding: 8px 0 5px 0;
     height: 40px;

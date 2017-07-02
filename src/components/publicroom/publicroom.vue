@@ -10,7 +10,7 @@
         </ul>
       </div>
       <div class="room-wrapper">
-        <chatbox :username="username"></chatbox>
+        <chatbox :username="username" :newuser="newuser"></chatbox>
       </div>
     </div>
   </div>
@@ -25,7 +25,8 @@ export default {
   data() {
     return {
       username: '',
-      userList: []
+      userList: [],
+      newuser: ''
     };
   },
   watch: {
@@ -39,17 +40,21 @@ export default {
     this.username = this.$route.params.username;
     this.$socket.emit('fetchList', { 'username': this.username });
     this.$socket.emit('iamOnline', { 'username': this.username });
+    this.$root.eventHub.$on('timeover', () => {
+      this.newuser = '';
+    });
     this.$nextTick(() => {
       if (!this.scroll) {
         this.scroll = new BScroll(this.$refs.userWrapper, {
           click: true
         });
+      } else {
+        this.scroll.refresh();
       }
     });
   },
   methods: {
     fetchData() {
-      console.log('here');
       this.username = this.$route.params.username;
     }
   },
@@ -64,6 +69,7 @@ export default {
       }
     },
     someoneOnline(user) {
+      this.newuser = user.username;
       this.userList.push(user.username);
     },
     someoneOffline(user) {

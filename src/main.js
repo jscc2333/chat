@@ -18,6 +18,9 @@ new Vue({
   components: {
     App
   },
+  data: {
+    eventHub: new Vue()
+  },
   sockets: {
     connect() {
       console.log('socket connected');
