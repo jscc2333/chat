@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import login from '../components/login/login.vue';
-import publicroom from '../components/publicroom/publicroom.vue';
+import room from '../components/room/room.vue';
+import vprivate from '../components/private/private.vue';
 
 Vue.use(Router);
 
@@ -12,9 +13,14 @@ export default new Router({
     component: login
   },
   {
-    path: '/publicroom/:username',
-    name: 'publicroom',
-    component: publicroom
+    path: '/room/:username',
+    name: 'room',
+    component: room
+  },
+  {
+    path: '/room/:username/private/:chatuser',
+    name: 'private',
+    component: vprivate
   }
   ]
 });

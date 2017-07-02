@@ -4,13 +4,13 @@
     <div class="public-room">
       <div class="user-wrapper" ref="userWrapper">
         <ul>
-          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item">
+          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="goPrivate($event,userIndex)">
             <span class="name">{{user}}</span>
           </li>
         </ul>
       </div>
       <div class="room-wrapper">
-        <chatbox :username="username" :newuser="newuser"></chatbox>
+        <chatbox :username="username" :newuser="newuser" :roomType="1"></chatbox>
       </div>
     </div>
   </div>
@@ -18,6 +18,7 @@
 
 <script type="text/ecmascript-6">
 import BScroll from 'better-scroll';
+import router from '../../router';
 import header from '../header/header';
 import chatbox from '../chatbox/chatbox';
 
@@ -56,6 +57,12 @@ export default {
   methods: {
     fetchData() {
       this.username = this.$route.params.username;
+    },
+    goPrivate(event, userIndex) {
+      if (!event._constructed) {
+        return;
+      }
+      router.push(`${this.username}/private/${this.userList[userIndex]}`);
     }
   },
   sockets: {
@@ -64,13 +71,17 @@ export default {
         console.log('当前没有用户在线');
       } else {
         data.forEach((user) => {
-          this.userList.push(user.username);
+          if (this.userList.indexOf(user.username) === -1) {
+            this.userList.push(user.username);
+          }
         });
       }
     },
     someoneOnline(user) {
       this.newuser = user.username;
-      this.userList.push(user.username);
+      if (this.userList.indexOf(user.username) === -1) {
+        this.userList.push(user.username);
+      }
     },
     someoneOffline(user) {
       console.log('offline');
@@ -114,7 +125,7 @@ export default {
     }
   }
   .room-wrapper {
-    flex: 1
+    flex: 1;
   }
 }
 </style>

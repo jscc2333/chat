@@ -59,9 +59,6 @@ export default {
       if (password) {
         this.password = password;
       }
-    },
-    '$route': function () {
-      alert(1);
     }
   },
   computed: {
@@ -104,7 +101,7 @@ export default {
     },
     needJump(status = false) {
       this.flag = !status;
-      router.push(`publicroom/${this.name}`);
+      router.push(`room/${this.name}`);
     }
   },
   sockets: {
