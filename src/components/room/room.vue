@@ -6,6 +6,7 @@
         <ul>
           <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="goPrivate($event,userIndex)">
             <span class="name">{{user}}</span>
+            <span v-show="countMessage(userIndex)">{{messageCount[userIndex]}}</span>
           </li>
         </ul>
       </div>
@@ -18,20 +19,24 @@
 
 <script type="text/ecmascript-6">
 import BScroll from 'better-scroll';
+import Vue from 'vue';
 import router from '../../router';
 import header from '../header/header';
 import chatbox from '../chatbox/chatbox';
+import { loadMessage } from '../../common/js/store.js';
 
 export default {
   data() {
     return {
       username: '',
       userList: [],
-      newuser: ''
+      newuser: '',
+      messageCount: []
     };
   },
   watch: {
-    '$route': 'fetchData'
+    '$route': function () {
+    }
   },
   components: {
     'v-header': header,
@@ -43,6 +48,28 @@ export default {
     this.$socket.emit('iamOnline', { 'username': this.username });
     this.$root.eventHub.$on('timeover', () => {
       this.newuser = '';
+    });
+    this.$root.eventHub.$on('getPrivateMsg', () => {
+      let messages = loadMessage(this.username);
+      this.userList.forEach((user, index) => {
+        if (messages) {
+          let length = messages.filter((item) => {
+            return item.username === user;
+          }).length;
+          Vue.set(this.messageCount, index, length);
+        }
+      });
+    });
+    this.$root.eventHub.$on('getMsgOnce', () => {
+      let messages = loadMessage(this.username);
+      this.userList.forEach((user, index) => {
+        if (messages) {
+          let length = messages.filter((item) => {
+            return item.username === user;
+          }).length;
+          Vue.set(this.messageCount, index, length);
+        }
+      });
     });
     this.$nextTick(() => {
       if (!this.scroll) {
@@ -63,6 +90,13 @@ export default {
         return;
       }
       router.push(`${this.username}/private/${this.userList[userIndex]}`);
+    },
+    countMessage(index) {
+      if (!this.messageCount) {
+        return false;
+      } else {
+        return this.messageCount[index] > 0;
+      }
     }
   },
   sockets: {

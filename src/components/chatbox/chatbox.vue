@@ -76,6 +76,7 @@ export default {
     });
     if (this.unReceivedMsg) {
       this.messageList = this.unReceivedMsg;
+      console.log(1);
       clearMessage(this.username, this.chatuser);
     }
   },
@@ -121,11 +122,12 @@ export default {
   },
   sockets: {
     broadMessage(data) {
-      if (data.userlist) {
+      if (data.userlist.length) {
         if (data.userlist.indexOf(this.username) !== -1 && this.roomType === 0 && this.chatuser === data.username) {
           this.messageList.push(data);
         } else {
           saveMessage(data);
+          this.$root.eventHub.$emit('getPrivateMsg');
         }
       } else {
         this.messageList.push(data);

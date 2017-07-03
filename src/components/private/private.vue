@@ -19,7 +19,8 @@ export default {
     return {
       username: '',
       chatuser: '',
-      unReceivedMsg: []
+      unReceivedMsg: [],
+      messageCount: []
     };
   },
   components: {
@@ -36,12 +37,16 @@ export default {
           'message': item.message,
           'username': item.username
         };
-        console.log(data);
         if (data.username === this.chatuser) {
           this.unReceivedMsg.push(data);
         }
       });
     }
+  },
+  destroyed() {
+    setTimeout(() => {
+      this.$root.eventHub.$emit('getMsgOnce');
+    }, 1000);
   },
   methods: {
     goBack() {

@@ -63,15 +63,15 @@ export function clearMessage(key1, key2) {
   if (typeof (messages) !== 'object') {
     messages = JSON.parse(messages);
   }
+  console.log(messages[key1]);
   if (messages[key1]) {
-    messages[key1].forEach((item, index) => {
-      if (messages[key1][index].username === key2) {
-        messages[key1].splice(index, 1);
+    while (messages[key1].length) {
+      if (messages[key1][0].username === key2) {
+        messages[key1].splice(0, 1);
       }
-    });
-    if (messages[key1].length === 0) {
-      delete messages[key1];
-    }
+    };
+    delete messages[key1];
   }
+  console.log(messages[key1]);
   window.sessionStorage._messages_ = JSON.stringify(messages);
 }
