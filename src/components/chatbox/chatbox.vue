@@ -28,6 +28,7 @@
 
 <script type="text/ecmascript-6">
 import BScroll from 'better-scroll';
+import router from '../../router';
 import { saveMessage, clearMessage } from '../../common/js/store.js';
 
 const PRIVATE_ROOM = 0;
@@ -76,7 +77,6 @@ export default {
     });
     if (this.unReceivedMsg) {
       this.messageList = this.unReceivedMsg;
-      console.log(1);
       clearMessage(this.username, this.chatuser);
     }
   },

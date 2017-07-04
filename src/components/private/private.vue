@@ -43,14 +43,21 @@ export default {
       });
     }
   },
+  mounted() {
+    window.addEventListener('unload', this.unloadHandler);
+  },
   destroyed() {
     setTimeout(() => {
       this.$root.eventHub.$emit('getMsgOnce');
     }, 1000);
+    window.removeEventListener('unload', this.unloadHandler);
   },
   methods: {
     goBack() {
       router.go(-1);
+    },
+    unloadHandler() {
+      this.$socket.emit('iamOffline', { 'username': this.username });
     }
   }
 };

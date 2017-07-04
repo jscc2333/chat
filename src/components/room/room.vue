@@ -6,7 +6,7 @@
         <ul>
           <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="goPrivate($event,userIndex)">
             <span class="name">{{user}}</span>
-            <span v-show="countMessage(userIndex)">{{messageCount[userIndex]}}</span>
+            <span class="count" v-show="countMessage(userIndex)">{{messageCount[userIndex]}}</span>
           </li>
         </ul>
       </div>
@@ -33,10 +33,6 @@ export default {
       newuser: '',
       messageCount: []
     };
-  },
-  watch: {
-    '$route': function () {
-    }
   },
   components: {
     'v-header': header,
@@ -81,10 +77,13 @@ export default {
       }
     });
   },
+  destroyed() {
+    window.removeEventListener('unload', this.unloadHandler);
+  },
+  mounted() {
+    window.addEventListener('unload', this.unloadHandler);
+  },
   methods: {
-    fetchData() {
-      this.username = this.$route.params.username;
-    },
     goPrivate(event, userIndex) {
       if (!event._constructed) {
         return;
@@ -97,6 +96,9 @@ export default {
       } else {
         return this.messageCount[index] > 0;
       }
+    },
+    unloadHandler(e) {
+      this.$socket.emit('iamOffline', { 'username': this.username });
     }
   },
   sockets: {
@@ -118,8 +120,6 @@ export default {
       }
     },
     someoneOffline(user) {
-      console.log('offline');
-      console.log(`${this.userList} ${user.username}`);
       let index = this.userList.indexOf(user.username);
       if (index !== -1) {
         this.userList.splice(index, 1);
@@ -142,7 +142,7 @@ export default {
     background: #f3f5f7;
     .user-item {
       display: table;
-
+      position: relative;
       padding: 0 12px;
       line-height: 54px;
       width: 56px;
@@ -151,10 +151,19 @@ export default {
         display: table-cell;
         vertical-align: middle;
         width: 56px;
+        text-align: center;
         font-size: 20px;
         &:last-child {
           border: none;
         }
+      }
+      .count {
+        display: inline-block;
+        padding: 2px;
+        line-height: 12px;
+        font-size: 12px;
+        background: rgba(0, 160, 220, 0.2);
+        border-radius: 50%;
       }
     }
   }

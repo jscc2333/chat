@@ -43,6 +43,8 @@ io.on('connection', (socket) => {
         } else {
           if (users[0].password !== user.password) {
             socket.emit('loginMsg', output(false, null, '密码错误，请重试'));
+          } else if (users[0].is_online) {
+            socket.emit('loginMsg', output(false, null, '当前账户已在线，请勿重新登录'));
           } else {
             User.update({
               username: user.username
