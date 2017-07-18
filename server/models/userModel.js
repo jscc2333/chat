@@ -5,7 +5,22 @@ const Schema = mongoose.Schema;
 const userModel = new Schema({
   username: String,
   password: String,
-  is_online: Boolean
+  is_online: Boolean,
+  information: {
+    sex: {
+      type: String,
+      default: ''
+    },
+    area: {
+      type:String,
+      default:'china'
+    },
+    career: {
+      type:String,
+      default:''
+    }
+  }
 });
 
+//导出模式
 module.exports = mongoose.model('userdbs', userModel);

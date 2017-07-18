@@ -39,13 +39,17 @@ io.on('connection', (socket) => {
         console.log(err);
       } else {
         if (!users.length) {
+          // 用户长度为0
           socket.emit('loginMsg', output(false, null, '用户名不存在，请注册'));
         } else {
+          // 用户名密码不正确
           if (users[0].password !== user.password) {
             socket.emit('loginMsg', output(false, null, '密码错误，请重试'));
           } else if (users[0].is_online) {
+            // 用户已经在线
             socket.emit('loginMsg', output(false, null, '当前账户已在线，请勿重新登录'));
           } else {
+            // 更新用户在线状态
             User.update({
               username: user.username
             }, {
@@ -76,8 +80,10 @@ io.on('connection', (socket) => {
         console.log(err);
       } else {
         if (users.length) {
+          // 用户名已存在
           socket.emit('registMsg', output(false, null, '用户名已存在，请更换用户名'));
         } else {
+          // 注册用户基本信息
           let data = {
             username: temp.username,
             password: temp.password,
@@ -88,7 +94,6 @@ io.on('connection', (socket) => {
             if (err) {
               socket.emit('registMsg', output(false, null, '用户注册失败'));
             } else {
-              console.log('run to here');
               socket.emit('registMsg', output(true, {
                 username: user.username
               }, '用户注册成功'));
@@ -111,16 +116,19 @@ io.on('connection', (socket) => {
       if (err) {
         console.log(err);
       } else {
+        // 发布在线列表事件
         socket.emit('provList', users);
       }
     });
   });
 
   socket.on('iamOnline', (user) => {
+    // 用户上线广播给其他用户
     socket.broadcast.emit('someoneOnline', user);
   });
 
   socket.on('iamOffline', (user) => {
+    // 用户下线广播给其他用户，并更新在线状态
     User.update({
       username: user.username
     }, {
@@ -137,6 +145,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendMessage', (data) => {
+    // 发送消息事件
     socket.broadcast.emit('broadMessage', data);
   });
 });
