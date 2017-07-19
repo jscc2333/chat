@@ -1,9 +1,6 @@
 <template>
   <div class="header">
-    <div class="user-wrapper">
-      <img src="../../assets/account.png" width="32" height="32">
-      <span class="username">{{username}}</span>
-    </div>
+    <avatar :username="username"></avatar>
     <i class="icon-chat"></i>
     <span class="title">Chat</span>
     <span class="icon-close" @click="signout"></span>
@@ -12,11 +9,16 @@
 
 <script type="text/ecmascript-6">
 import router from '../../router';
+import avatar from '../avatar/avatar';
+
 export default {
   props: {
     username: {
       type: String
     }
+  },
+  components: {
+    avatar
   },
   methods: {
     signout() {
@@ -37,17 +39,6 @@ export default {
   background: #f3f5f7;
   font-size: 24px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-  .user-wrapper {
-    position: absolute;
-    left: 10px;
-    top: 5px;
-    .username {
-      display: inline-block;
-      vertical-align: top;
-      line-height: 32px;
-      font-size: 24px;
-    }
-  }
   .icon-chat {
     font-size: 20px;
   }

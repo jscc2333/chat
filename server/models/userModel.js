@@ -12,15 +12,15 @@ const userModel = new Schema({
       default: ''
     },
     area: {
-      type:String,
-      default:'china'
+      type: String,
+      default: 'china'
     },
     career: {
-      type:String,
-      default:''
+      type: String,
+      default: ''
     }
   }
 });
 
-//导出模式
+// 导出模式
 module.exports = mongoose.model('userdbs', userModel);

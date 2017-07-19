@@ -148,6 +148,19 @@ io.on('connection', (socket) => {
     // 发送消息事件
     socket.broadcast.emit('broadMessage', data);
   });
+
+  socket.on('fetchInformation', (username) => {
+    // 查看消息事件
+    User.find({
+      username: username
+    }, (err, userInfo) => {
+      if (err) {
+        console.log(err);
+      } else {
+        socket.emit('provInfo', userInfo);
+      }
+    });
+  });
 });
 
 http.listen(3000, () => {
