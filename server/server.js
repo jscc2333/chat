@@ -161,6 +161,26 @@ io.on('connection', (socket) => {
       }
     });
   });
+
+  socket.on('updateInformation', (data) => {
+    User.update({
+      username: data.username
+    }, {
+      $set: {
+        information: {
+          sex: data.sex,
+          area: data.area,
+          career: data.career
+        }
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        socket.emit('updateInfoSuccessful');
+      }
+    });
+  });
 });
 
 http.listen(3000, () => {

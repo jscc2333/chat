@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <avatar :username="username"></avatar>
+    <information :username="username"></information>
     <i class="icon-chat"></i>
     <span class="title">Chat</span>
     <span class="icon-close" @click="signout"></span>
@@ -9,7 +9,7 @@
 
 <script type="text/ecmascript-6">
 import router from '../../router';
-import avatar from '../avatar/avatar';
+import information from '../information/information';
 
 export default {
   props: {
@@ -18,7 +18,7 @@ export default {
     }
   },
   components: {
-    avatar
+    information
   },
   methods: {
     signout() {
