@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-box">
+  <div class="chat-box" @click="closeInfo()">
     <h1 class="title">{{roomname}}</h1>
     <div class="notice-wrapper">
       <transition name="fade">
@@ -67,6 +67,7 @@ export default {
     }
   },
   created() {
+    // 初始化better-scroll
     this.$nextTick(() => {
       if (!this.scroll) {
         this.scroll = new BScroll(this.$refs.messageBox, {
@@ -75,8 +76,10 @@ export default {
         });
       }
     });
+    // 存在未接受消息，则添加消息
     if (this.unReceivedMsg) {
       this.messageList = this.unReceivedMsg;
+      // 清楚消息缓存
       clearMessage(this.username, this.chatuser);
     }
   },
@@ -106,6 +109,7 @@ export default {
         'userlist': []
       };
       if (!this.roomType) {
+        // 添加组列表成员
         data.userlist.push(this.chatuser);
       }
       this.$socket.emit('sendMessage', data);
@@ -115,21 +119,32 @@ export default {
       this.$nextTick(() => {
         this.scroll.refresh();
         let messagelist = this.$refs.messageBox.getElementsByClassName('message-list-hook');
+        // 取得最后一条消息位置
         let el = messagelist[this.messageList.length - 1];
+        // 滚动到最后一条消息处
         this.scroll.scrollToElement(el);
       });
+    },
+    closeInfo() {
+      this.$root.eventHub.$emit('closeInformation');
     }
   },
   sockets: {
+    // 接受广播消息
     broadMessage(data) {
       if (data.userlist.length) {
+        // 若存在私聊消息
         if (data.userlist.indexOf(this.username) !== -1 && this.roomType === 0 && this.chatuser === data.username) {
+          // 若刚好在所聊天对象的私人聊天室，则将消息添加到消息列表中
           this.messageList.push(data);
         } else {
+          // 不在私人聊天室，则将消息保存到本地存储中
           saveMessage(data);
+          // 发布收到私人消息的事件
           this.$root.eventHub.$emit('getPrivateMsg');
         }
       } else {
+        // 不是私聊消息，直接添加到公共聊天室列表
         this.messageList.push(data);
       }
       this.$nextTick(() => {

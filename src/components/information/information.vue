@@ -14,7 +14,7 @@
             <li v-for="(infoItem,infoIndex) in information" :key="infoIndex" class="info-item">
               <span class="info-type">{{infoItem.type}}</span>
               <span class="info-value" v-if="scanmode">{{infoItem.value}}</span>
-              <input class="info-input" type="text" v-else :value="infoItem.value">
+              <input class="info-input" type="text" v-else :value="infoItem.value" @keyup.enter="updateInfo()" size="18">
               <span class="edit" @click="toggle($event)">&gt</span>
             </li>
           </ul>
@@ -23,7 +23,6 @@
             <span class="cancel" @click="cancelEditMode">取消</span>
           </div>
         </div>
-        <span class="icon-close" @click="hideInformation"></span>
       </div>
     </transition>
   </div>
@@ -46,6 +45,10 @@ export default {
     }
   },
   created() {
+    this.$root.eventHub.$on('closeInformation', () => {
+      this.show = false;
+      this.scanmode = true;
+    });
   },
   methods: {
     showInformation() {
@@ -86,36 +89,35 @@ export default {
     provInfo(data) {
       let informationObj = data[0].information;
       for (let item in informationObj) {
-        if (informationObj[item].length) {
-          // 添加信息项标志位
-          let pushFlag = 0;
-          // 需要更新数据项索引
-          let updateIndex;
-          let length = this.information.length;
-          for (let i = 0; i < length; i++) {
-            if (this.information[i].type !== item) {
-              pushFlag += 1;
-            } else {
-              updateIndex = i;
-            }
-          }
-          if (pushFlag === length) {
-            // 如果都不等于该信息项，新增
-            this.information.push({
-              type: item,
-              value: informationObj[item]
-            });
+        // 添加信息项标志位
+        let pushFlag = 0;
+        // 需要更新数据项索引
+        let updateIndex;
+        let length = this.information.length;
+        for (let i = 0; i < length; i++) {
+          if (this.information[i].type !== item) {
+            pushFlag += 1;
           } else {
-            // 更新信息
-            Vue.set(this.information, updateIndex, {
-              type: item,
-              value: informationObj[item]
-            });
+            updateIndex = i;
           }
+        }
+        if (pushFlag === length) {
+          // 如果都不等于该信息项，新增
+          this.information.push({
+            type: item,
+            value: informationObj[item]
+          });
+        } else {
+          // 更新信息
+          Vue.set(this.information, updateIndex, {
+            type: item,
+            value: informationObj[item]
+          });
         }
       }
     },
     updateInfoSuccessful() {
+      // 消息成功更新，转为阅读模式
       this.scanmode = true;
       this.$socket.emit('fetchInformation', this.username);
     }
@@ -141,12 +143,13 @@ export default {
     top: 0;
     bottom: 0;
     left: 0;
-    right: 0;
+    right: 100px;
     z-index: 100;
     overflow: auto;
     &.fade-enter,
     &.fade-leave-active {
       opacity: 0;
+      transform: translateX(-100%);
     }
     &.fade-enter-active,
     &.fade-leave-active {
@@ -214,13 +217,6 @@ export default {
           background: rgb(0, 160, 220);
         }
       }
-    }
-    .icon-close {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      z-index: 101;
-      color: #fff;
     }
   }
 }

@@ -4,7 +4,7 @@
     <div class="public-room">
       <div class="user-wrapper" ref="userWrapper">
         <ul>
-          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="goPrivate($event,userIndex)">
+          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @dblclick="goPrivate($event,userIndex)">
             <span class="name">{{user}}</span>
             <span class="count" v-show="countMessage(userIndex)">{{messageCount[userIndex]}}</span>
           </li>
@@ -39,12 +39,17 @@ export default {
     chatbox
   },
   created() {
+    // 获取路由信息
     this.username = this.$route.params.username;
+    // 获取用户列表
     this.$socket.emit('fetchList', { 'username': this.username });
+    // 广播上线消息
     this.$socket.emit('iamOnline', { 'username': this.username });
+    // 发布上线提醒结束事件
     this.$root.eventHub.$on('timeover', () => {
       this.newuser = '';
     });
+    // 响应获取私人消息事件
     this.$root.eventHub.$on('getPrivateMsg', () => {
       let messages = loadMessage(this.username);
       this.userList.forEach((user, index) => {
@@ -78,18 +83,22 @@ export default {
     });
   },
   destroyed() {
+    // 移除页面重载事件
     window.removeEventListener('unload', this.unloadHandler);
   },
   mounted() {
+    // 添加页面重载事件
     window.addEventListener('unload', this.unloadHandler);
   },
   methods: {
+    // 进入私聊房间
     goPrivate(event, userIndex) {
       if (!event._constructed) {
         return;
       }
       router.push(`${this.username}/private/${this.userList[userIndex]}`);
     },
+    // 私聊消息计数
     countMessage(index) {
       if (!this.messageCount) {
         return false;
@@ -106,6 +115,7 @@ export default {
       if (!data.length) {
         console.log('当前没有用户在线');
       } else {
+        // 添加在线列表
         data.forEach((user) => {
           if (this.userList.indexOf(user.username) === -1) {
             this.userList.push(user.username);
@@ -113,12 +123,14 @@ export default {
         });
       }
     },
+    // 上线
     someoneOnline(user) {
       this.newuser = user.username;
       if (this.userList.indexOf(user.username) === -1) {
         this.userList.push(user.username);
       }
     },
+    // 下线
     someoneOffline(user) {
       let index = this.userList.indexOf(user.username);
       if (index !== -1) {

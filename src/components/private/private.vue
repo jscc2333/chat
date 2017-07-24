@@ -1,6 +1,6 @@
 <template>
   <div class="private">
-    <v-header></v-header>
+    <v-header :username="username"></v-header>
     <div class="room-wrapper">
       <chatbox :chatuser="chatuser" :roomType="0" :username="username" :unReceivedMsg="unReceivedMsg"></chatbox>
       <img src="../../assets/back.png" width="18" height="18" class="back" @click="goBack">
@@ -28,10 +28,13 @@ export default {
     chatbox
   },
   created() {
+    // 从路由中获取参数
     this.username = this.$route.params.username;
     this.chatuser = this.$route.params.chatuser;
+    // 获取本地存储中的私人信息
     let messagelist = loadMessage(this.username);
     if (messagelist !== undefined) {
+      // 存在消息且用户对象正确则添加
       messagelist.forEach((item) => {
         let data = {
           'message': item.message,
@@ -44,12 +47,14 @@ export default {
     }
   },
   mounted() {
+    // 添加页面重载事件
     window.addEventListener('unload', this.unloadHandler);
   },
   destroyed() {
     setTimeout(() => {
       this.$root.eventHub.$emit('getMsgOnce');
     }, 1000);
+    // 移除页面重载事件
     window.removeEventListener('unload', this.unloadHandler);
   },
   methods: {

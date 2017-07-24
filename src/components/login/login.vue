@@ -53,10 +53,12 @@ export default {
     };
   },
   watch: {
+    // 监测name的值
     name: function () {
       this.password = '';
       let password = loadFromLocal(this.name);
       if (password) {
+        // 若本地缓存存在密码，则自动补全密码
         this.password = password;
       }
     }
@@ -79,7 +81,9 @@ export default {
         if (!(this.name && this.password)) {
           return;
         }
+        // 保存密码到本地存储
         saveToLocal(this.name, this.password);
+        // 发布登录事件
         this.$socket.emit('login', user);
       } else {
         if (!(this.name && this.password && this.cPassword)) {
@@ -88,6 +92,7 @@ export default {
         if (this.password !== this.cPassword) {
           this.message = '两次输入的密码不一致，请确认';
         } else {
+          // 发布注册用户事件
           this.$socket.emit('regist', user);
         }
       }
