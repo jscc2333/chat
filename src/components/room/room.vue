@@ -4,7 +4,7 @@
     <div class="public-room">
       <div class="user-wrapper" ref="userWrapper">
         <ul>
-          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @dblclick="goPrivate($event,userIndex)">
+          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="scanInformation($event)" @dbclick="goPrivate($event,userIndex)">
             <span class="name">{{user}}</span>
             <span class="count" v-show="countMessage(userIndex)">{{messageCount[userIndex]}}</span>
           </li>
@@ -23,6 +23,7 @@ import Vue from 'vue';
 import router from '../../router';
 import header from '../header/header';
 import chatbox from '../chatbox/chatbox';
+import information from '../information/information';
 import { loadMessage } from '../../common/js/store.js';
 
 export default {
@@ -36,7 +37,8 @@ export default {
   },
   components: {
     'v-header': header,
-    chatbox
+    chatbox,
+    information
   },
   created() {
     // 获取路由信息
@@ -91,8 +93,16 @@ export default {
     window.addEventListener('unload', this.unloadHandler);
   },
   methods: {
+    scanInformation(event) {
+      if (!event._constructed) {
+        return;
+      }
+      // this.$socket.emit("")
+      console.log('run to here');
+    },
     // 进入私聊房间
     goPrivate(event, userIndex) {
+      console.log(1);
       if (!event._constructed) {
         return;
       }
