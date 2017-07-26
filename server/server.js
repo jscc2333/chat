@@ -162,15 +162,31 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('fetchOtherInformation', (username) => {
+    User.find({
+      username: username
+    }, (err, userInfo) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(userInfo);
+        socket.emit('provOtherInformation', userInfo[0].information);
+      }
+    });
+  });
+
   socket.on('updateInformation', (data) => {
     User.update({
       username: data.username
     }, {
       $set: {
         information: {
-          sex: data.sex,
-          area: data.area,
-          career: data.career
+          Autograph: data.Autograph,
+          Sex: data.Sex,
+          Age: data.Age,
+          Area: data.Area,
+          Career: data.Career,
+          Like: data.Like
         }
       }
     }, (err) => {
@@ -178,6 +194,23 @@ io.on('connection', (socket) => {
         console.log(err);
       } else {
         socket.emit('updateInfoSuccessful');
+      }
+    });
+  });
+
+  socket.on('updateBaseInformation', (data) => {
+    console.log(data);
+    User.update({
+      username: data.username
+    }, {
+      $set: {
+        password: data.password
+      }
+    }, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        socket.emit('updateBaseInfoSuccessful');
       }
     });
   });

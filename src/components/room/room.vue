@@ -4,14 +4,24 @@
     <div class="public-room">
       <div class="user-wrapper" ref="userWrapper">
         <ul>
-          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="scanInformation($event)" @dbclick="goPrivate($event,userIndex)">
+          <li v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="scanInformation($event)" @dblclick="goPrivate($event,userIndex)">
             <span class="name">{{user}}</span>
             <span class="count" v-show="countMessage(userIndex)">{{messageCount[userIndex]}}</span>
           </li>
         </ul>
       </div>
-      <div class="room-wrapper">
+      <div class="room-wrapper" @click="hideInformation()">
         <chatbox :username="username" :newuser="newuser" :roomType="1"></chatbox>
+        <transition name="slide">
+          <div class="information" v-show="show">
+            <ul>
+              <li v-for="(infoItem,infoIndex) in information" :key="infoIndex" class="info-item">
+                <span class="info-type">{{infoItem.type}}</span>
+                <span class="info-value">{{infoItem.value}}</span>
+              </li>
+            </ul>
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -32,7 +42,10 @@ export default {
       username: '',
       userList: [],
       newuser: '',
-      messageCount: []
+      messageCount: [],
+      timer: null,
+      information: [],
+      show: false
     };
   },
   components: {
@@ -97,15 +110,24 @@ export default {
       if (!event._constructed) {
         return;
       }
-      // this.$socket.emit("")
-      console.log('run to here');
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.show = false;
+        let el = event.target;
+        let username = '';
+        if (el.className !== 'user-item') {
+          el = el.parentNode;
+        }
+        username = el.getElementsByTagName('span')[0].innerHTML;
+        this.$socket.emit('fetchOtherInformation', username);
+      }, 300);
     },
     // 进入私聊房间
     goPrivate(event, userIndex) {
-      console.log(1);
-      if (!event._constructed) {
-        return;
-      }
+      // if (!event._constructed) {
+      //   return;
+      // }
+      clearTimeout(this.timer);
       router.push(`${this.username}/private/${this.userList[userIndex]}`);
     },
     // 私聊消息计数
@@ -115,6 +137,10 @@ export default {
       } else {
         return this.messageCount[index] > 0;
       }
+    },
+    hideInformation() {
+      this.show = false;
+      this.$root.eventHub.$emit('closeInformation');
     },
     unloadHandler(e) {
       this.$socket.emit('iamOffline', { 'username': this.username });
@@ -146,6 +172,38 @@ export default {
       if (index !== -1) {
         this.userList.splice(index, 1);
       }
+    },
+    // 获取在线人员信息
+    provOtherInformation(data) {
+      for (let item in data) {
+        // 添加信息项标志位
+        let pushFlag = 0;
+        // 需要更新数据项索引
+        let updateIndex;
+        let length = this.information.length;
+        for (let i = 0; i < length; i++) {
+          if (this.information[i].type !== item) {
+            pushFlag += 1;
+          } else {
+            updateIndex = i;
+          }
+        }
+        if (pushFlag === length) {
+          // 如果都不等于该信息项，新增
+          this.information.push({
+            type: item,
+            value: data[item]
+          });
+        } else {
+          // 更新信息
+          Vue.set(this.information, updateIndex, {
+            type: item,
+            value: data[item]
+          });
+        }
+      }
+      this.show = true;
+      console.log(data);
     }
   }
 };
@@ -191,6 +249,42 @@ export default {
   }
   .room-wrapper {
     flex: 1;
+    .information {
+      position: absolute;
+      top: 0;
+      left: 80px;
+      right: 0;
+      background: #fff;
+      z-index: 10;
+      &.slide-enter,
+      &.slide-leave-active {
+        opacity: 0;
+        transform: translateY(-100%);
+      }
+      &.slide-enter-active,
+      &.slide-leave-active {
+        transition: all .3s linear;
+      }
+      .info-item {
+        padding: 10px 0;
+        margin: 0 10px;
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+        &:last-child {
+          border: none;
+        }
+        .info-type {
+          display:inline-block;
+          width: 65px;
+          text-align: center;
+          color:rgba(0,160,220,0.5);
+          font-size: 14px;
+        }
+        .info-value {
+          color: #000;
+          font-size: 16px;
+        }
+      }
+    }
   }
 }
 </style>

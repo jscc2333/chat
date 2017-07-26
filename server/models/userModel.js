@@ -7,17 +7,29 @@ const userModel = new Schema({
   password: String,
   is_online: Boolean,
   information: {
-    sex: {
+    'Autograph': {
+      type: String,
+      default: 'JavaScript是最好的语言'
+    },
+    'Sex': {
       type: String,
       default: ''
     },
-    area: {
+    'Age': {
+      type: String,
+      default: ''
+    },
+    'Area': {
       type: String,
       default: 'china'
     },
-    career: {
+    'Career': {
       type: String,
       default: ''
+    },
+    'Like': {
+      type: String,
+      default: 'JavaScript'
     }
   }
 });

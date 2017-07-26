@@ -24,11 +24,14 @@
             <span class="cancel" @click="cancelEditMode">取消</span>
           </div>
         </div>
-        <div class="advanced-operation">
-          <input type="text" v-show="changeflag" value="111">
-          <input type="text" v-show="changeflag" value="222">
+        <div class="advanced-operation" v-show="!scanmode">
+          <div class="base-information" v-show="changeflag">
+            <label for="password">新密码：</label>
+            <input type="password" id="password">
+          </div>
           <span class="change-base" @click="advancedToggle($event)">{{changeBase}}</span>
         </div>
+        <div class="cancel-layer" @click="cancelAll"></div>
       </div>
     </transition>
   </div>
@@ -36,6 +39,7 @@
 
 <script type="text/ecmascript-6">
 import Vue from 'vue';
+import router from '../../router';
 
 export default {
   data() {
@@ -60,9 +64,9 @@ export default {
   computed: {
     changeBase() {
       if (!this.changeflag) {
-        return '更改基础信息';
+        return '更改密码';
       } else {
-        return '保存信息';
+        return '保存新密码';
       }
     }
   },
@@ -86,6 +90,20 @@ export default {
     },
     advancedToggle(event) {
       this.changeflag = !this.changeflag;
+      if (!this.changeflag === true) {
+        let el = event.target;
+        let input = el.parentNode.getElementsByTagName('input');
+        if (input[0].value.length === 0) {
+          return;
+        }
+        console.log(input[0].value);
+        let data = {
+          username: this.username,
+          password: input[0].value
+        };
+        console.log(data);
+        this.$socket.emit('updateBaseInformation', data);
+      }
     },
     updateInfo() {
       let infoItem = document.getElementsByClassName('info-item');
@@ -97,15 +115,19 @@ export default {
         let value = infoItem[i].getElementsByClassName('info-input')[0].value;
         data[type] = value;
       }
+      console.log(data);
       this.$socket.emit('updateInformation', data);
     },
     cancelEditMode() {
+      this.scanmode = true;
+    },
+    cancelAll() {
+      this.changeflag = false;
       this.scanmode = true;
     }
   },
   sockets: {
     provInfo(data) {
-      console.log(data);
       let informationObj = data[0].information;
       for (let item in informationObj) {
         // 添加信息项标志位
@@ -137,8 +159,16 @@ export default {
     },
     updateInfoSuccessful() {
       // 消息成功更新，转为阅读模式
+      if (!this.canmode) {
+        this.$socket.emit('fetchInformation', this.username);
+      }
       this.scanmode = true;
-      this.$socket.emit('fetchInformation', this.username);
+    },
+    updateBaseInfoSuccessful() {
+      this.changeflag = false;
+      this.$socket.emit('iamOffline', { 'username': this.username });
+      console.log(1);
+      router.push('/login');
     }
   }
 };
@@ -164,10 +194,10 @@ export default {
   .user-information {
     position: fixed;
     top: 0;
-    bottom: 0;
+    bottom: 30px;
     left: 0;
     right: 100px;
-    z-index: 100;
+    z-index: 50;
     overflow: auto;
     &.fade-enter,
     &.fade-leave-active {
@@ -184,15 +214,17 @@ export default {
       justify-content: center;
       width: 100%;
       height: 200px;
+      z-index: 100;
       .blur {
         position: absolute;
         width: 100%;
         height: 200px;
         background: rgba(7, 17, 27, 0.9);
         filter: blur(10px);
+        z-index:100;
       }
       img {
-        z-index: 10;
+        z-index: 100;
         border-radius: 50%;
         width: 70%;
         height: 70%;
@@ -203,19 +235,25 @@ export default {
       left: 0;
       right: 0;
       top: 200px;
-      bottom: 0;
-      background: #fff;
+      z-index: 100;
+      margin-top: 20px; 
+      margin-bottom: 10px;
       .info-item {
         position: relative;
         padding: 10px 0;
         margin: 0 10px;
         text-align: left;
         border-bottom: 1px solid rgba(147, 153, 159, 0.1);
+        background: #fff;
+        z-index: 100;
         &:last-child {
           border: none;
         }
         .info-type {
-          color: rgba(147, 153, 159, 0.5);
+          display: inline-block;
+          width: 60px;
+          text-align: center;
+          color: rgba(0, 160, 220, 0.5);
           font-size: 14px;
         }
         .info-value,
@@ -231,7 +269,7 @@ export default {
         }
         .edit {
           position: absolute;
-          top: 16px;
+          top: 13px;
           right: 5px;
           color: rgba(147, 153, 159, 0.5);
           font-size: 16px;
@@ -252,17 +290,48 @@ export default {
       }
     }
     .advanced-operation {
-      position: absolute;
-      bottom: 5px;
-      width: 100%;
+      position: fixed;
+      left:0;
+      bottom: 0;
+      right:100px;
+      padding:0 0 5px 0;
       font-size: 16px;
+      z-index: 100;
+      background: #fff;
+      .base-information {
+        margin: 10px 0;
+        text-align: left;
+        label {
+          display: inline-block;
+          width: 30%;
+          text-align: center;
+          color: rgba(147, 153, 159, 0.5);
+          font-size: 16px;
+        }
+        input {
+          display: inline-block;
+          width: 65%;
+          background: rgba(147, 153, 159, 0.2);
+          border-radius: 3px;
+        }
+      }
       .change-base {
         display: block;
         padding: 2px 5px;
         border-radius: 5px;
-        background: rgba(0, 160, 220, 0.8);
+        text-align: center;
+        background: rgba(0, 160, 220, 1);
         color: white;
       }
+    }
+    .cancel-layer {
+      position: fixed;
+      bottom: 0;
+      top: 0;
+      left: 0;
+      right: 100px;
+      z-index: 75;
+      background: #fff;
     }
   }
 }

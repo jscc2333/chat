@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-box" @click="closeInfo()">
+  <div class="chat-box">
     <h1 class="title">{{roomname}}</h1>
     <div class="notice-wrapper">
       <transition name="fade">
@@ -124,9 +124,6 @@ export default {
         // 滚动到最后一条消息处
         this.scroll.scrollToElement(el);
       });
-    },
-    closeInfo() {
-      this.$root.eventHub.$emit('closeInformation');
     }
   },
   sockets: {

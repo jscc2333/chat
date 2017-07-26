@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div class="header" @dblclick="test()">
     <information :username="username"></information>
     <i class="icon-chat"></i>
     <span class="title">Chat</span>
@@ -24,6 +24,9 @@ export default {
     signout() {
       this.$socket.emit('iamOffline', { 'username': this.username });
       router.push('/login');
+    },
+    test() {
+      console.log(1);
     }
   }
 };
