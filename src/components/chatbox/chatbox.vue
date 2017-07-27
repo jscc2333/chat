@@ -110,6 +110,7 @@ export default {
       };
       if (!this.roomType) {
         // 添加组列表成员
+        console.log('run to here');
         data.userlist.push(this.chatuser);
       }
       this.$socket.emit('sendMessage', data);
@@ -129,10 +130,12 @@ export default {
   sockets: {
     // 接受广播消息
     broadMessage(data) {
+      console.log(data);
       if (data.userlist.length) {
         // 若存在私聊消息
-        if (data.userlist.indexOf(this.username) !== -1 && this.roomType === 0 && this.chatuser === data.username) {
+        if (data.userlist.indexOf(this.username) !== -1 && this.roomType === PRIVATE_ROOM && this.chatuser === data.username) {
           // 若刚好在所聊天对象的私人聊天室，则将消息添加到消息列表中
+          console.log(`${this.username} +  ${this.roomType}  + ${this.chatuser}  ${data.username}`);
           this.messageList.push(data);
         } else {
           // 不在私人聊天室，则将消息保存到本地存储中
@@ -142,6 +145,10 @@ export default {
         }
       } else {
         // 不是私聊消息，直接添加到公共聊天室列表
+        console.log('run to here');
+        if (this.roomType === PRIVATE_ROOM) {
+          return;
+        }
         this.messageList.push(data);
       }
       this.$nextTick(() => {

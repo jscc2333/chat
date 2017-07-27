@@ -1,14 +1,14 @@
 <template>
   <div class="information">
     <div class="user-wrapper" @click="showInformation">
-      <img src="../../assets/avatar.jpg" width="32" height="32">
+      <img src="../../assets/avatar.png" width="32" height="32">
       <span class="username">{{username}}</span>
     </div>
     <transition name="fade">
       <div class="user-information" v-show="show">
         <div class="info-avatar">
           <div class="blur"></div>
-          <img src="../../assets/avatar.jpg" alt="">
+          <img src="../../assets/avatar_detail.png" alt="">
         </div>
         <div class="info-details" ref=" ">
           <ul>
@@ -221,12 +221,14 @@ export default {
         height: 200px;
         background: rgba(7, 17, 27, 0.9);
         filter: blur(10px);
-        z-index:100;
+        z-index: 100;
       }
       img {
+        display: inline-block;
         z-index: 100;
         border-radius: 50%;
         width: 70%;
+        max-width: 140px;
         height: 70%;
       }
     }
@@ -236,7 +238,7 @@ export default {
       right: 0;
       top: 200px;
       z-index: 100;
-      margin-top: 20px; 
+      margin-top: 20px;
       margin-bottom: 10px;
       .info-item {
         position: relative;
@@ -291,10 +293,10 @@ export default {
     }
     .advanced-operation {
       position: fixed;
-      left:0;
+      left: 0;
       bottom: 0;
-      right:100px;
-      padding:0 0 5px 0;
+      right: 100px;
+      padding: 0 0 5px 0;
       font-size: 16px;
       z-index: 100;
       background: #fff;
