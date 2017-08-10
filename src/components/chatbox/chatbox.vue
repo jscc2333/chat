@@ -247,7 +247,7 @@
       padding: 8px 0 5px 0;
       height: 40px;
       background: #f3f5f7;
-      z-index:101;
+      z-index:41;
       &.private {
         left: 0
       }
@@ -290,7 +290,7 @@
       right: 0;
       padding: 0 0 0 3px;
       background: #f3f5f7;
-      z-index: 100;
+      z-index: 40;
       &.slide-enter,
       &.slide-leave-active {
         opacity: 0;

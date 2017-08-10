@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-header :username="username"></v-header>
+    <v-header :username="username" :userAvatar="userAvatar" :avatarDetail="userAvatarDetail"></v-header>
     <div class="public-room">
       <div class="user-wrapper" ref="userWrapper">
         <ul>
@@ -8,17 +8,6 @@
             <span class="name">{{user}}</span>
             <span class="count" v-show="countMessage(userIndex)">{{messageCount[userIndex]}}</span>
           </li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>
-          <li class="user-item">1</li>          
         </ul>
       </div>
       <div class="room-wrapper" @click="hideInformation()">
@@ -51,6 +40,8 @@
     data() {
       return {
         username: '',
+        userAvatar: '',
+        userAvatarDetail: '',
         userList: [],
         newuser: '',
         messageCount: [],
@@ -68,6 +59,8 @@
     created() {
       // 获取路由信息
       this.username = this.$route.params.username;
+      // 获取用户头像
+      this.$socket.emit('fetchAvatar', { 'username': this.username });
       // 获取用户列表
       this.$socket.emit('fetchList', { 'username': this.username });
       // 广播上线消息
@@ -148,6 +141,7 @@
         this.showIndex = -1;
         this.show = false;
         clearTimeout(this.timer);
+        this.$root.eventHub.$emit('sendAvatar', this.userAvatar);
         router.push(`${this.username}/private/${this.userList[userIndex]}`);
       },
       // 私聊消息计数
@@ -168,6 +162,10 @@
       }
     },
     sockets: {
+      provAvatar(data) {
+        this.userAvatar = data;
+        this.userAvatarDetail = `${this.userAvatar.slice(0, -4)}_detail.png`;
+      },
       provList(data) {
         if (!data.length) {
           console.log('当前没有用户在线');
@@ -224,6 +222,10 @@
           }
         }
         this.show = true;
+      },
+      updateAvatarSuccessful(data) {
+        this.userAvatar = data;
+        this.userAvatarDetail = `${this.userAvatar.slice(0, -4)}_detail.png`;
       }
     }
   };
