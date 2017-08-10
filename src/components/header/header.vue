@@ -24,9 +24,6 @@ export default {
     signout() {
       this.$socket.emit('iamOffline', { 'username': this.username });
       router.push('/login');
-    },
-    test() {
-      console.log(1);
     }
   }
 };

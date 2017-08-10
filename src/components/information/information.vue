@@ -96,12 +96,10 @@ export default {
         if (input[0].value.length === 0) {
           return;
         }
-        console.log(input[0].value);
         let data = {
           username: this.username,
           password: input[0].value
         };
-        console.log(data);
         this.$socket.emit('updateBaseInformation', data);
       }
     },
@@ -115,7 +113,6 @@ export default {
         let value = infoItem[i].getElementsByClassName('info-input')[0].value;
         data[type] = value;
       }
-      console.log(data);
       this.$socket.emit('updateInformation', data);
     },
     cancelEditMode() {
@@ -167,7 +164,6 @@ export default {
     updateBaseInfoSuccessful() {
       this.changeflag = false;
       this.$socket.emit('iamOffline', { 'username': this.username });
-      console.log(1);
       router.push('/login');
     }
   }

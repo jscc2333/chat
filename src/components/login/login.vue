@@ -21,7 +21,7 @@
           </div>
         </transition>
         <div class="login-select">
-          <span class="confirm" @click="submit">{{optionButton}}</span>
+          <span class="confirm" @click="submit($event)">{{optionButton}}</span>
           <span class="regist" @click="needRegist">{{option}}</span>
         </div>
         <div class="message">
@@ -49,7 +49,8 @@ export default {
       message: '',
       regist: false,
       optionType: OPTION_TYPE_REGSIT,
-      flag: true
+      flag: true,
+      submitNumber: 0
     };
   },
   watch: {
@@ -72,13 +73,19 @@ export default {
     }
   },
   methods: {
-    submit() {
+    submit(event) {
+      if (!this.submitNumber) {
+        this.submitNumber += 1;
+      } else {
+        return;
+      }
       let user = {
         'username': this.name,
         'password': this.password
       };
       if (this.optionType) {
         if (!(this.name && this.password)) {
+          this.submitNumber = 0;
           return;
         }
         // 保存密码到本地存储
@@ -87,9 +94,11 @@ export default {
         this.$socket.emit('login', user);
       } else {
         if (!(this.name && this.password && this.cPassword)) {
+          this.submitNumber = 0;
           return;
         }
         if (this.password !== this.cPassword) {
+          this.submitNumber = 0;
           this.message = '两次输入的密码不一致，请确认';
         } else {
           // 发布注册用户事件
@@ -111,6 +120,7 @@ export default {
   },
   sockets: {
     loginMsg(data) {
+      this.submitNumber = 0;
       data = JSON.parse(data);
       if (!data.status) {
         this.message = data.info;
@@ -120,6 +130,7 @@ export default {
       }
     },
     registMsg(data) {
+      this.submitNumber = 0;
       data = JSON.parse(data);
       if (!data.status) {
         this.message = data.info;
