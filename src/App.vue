@@ -1,10 +1,9 @@
 <template>
   <div id="app">
     <router-link to="/login"></router-link>
-    <router-link to="/room"></router-link>
-    <router-link to="/private"></router-link>
+    <router-link to="/room/username"></router-link>
     <transition name="router" mode="out-in">
-      <router-view></router-view>
+    <router-view></router-view>
     </transition>
   </div>
 </template>

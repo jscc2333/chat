@@ -125,7 +125,7 @@
       },
       needJump(status = false) {
         this.flag = !status;
-        router.push(`room/${this.name}`);
+        router.push(`room/${this.name}/public`);
       }
     },
     sockets: {
