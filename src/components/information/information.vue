@@ -20,7 +20,7 @@
         <div class="info-details" ref=" ">
           <ul>
             <li v-for="(infoItem,infoIndex) in information" :key="infoIndex" class="info-item">
-              <span class="info-type">{{infoItem.type}}</span>
+              <span class="info-type">{{information_cn[infoIndex][infoItem.type]}}</span>
               <span class="info-value" v-if="scanmode">{{infoItem.value}}</span>
               <input class="info-input" type="text" v-else :value="infoItem.value" @keyup.enter="updateInfo()" size="18">
               <span class="edit" @click="toggle($event)">&gt</span>
@@ -54,6 +54,14 @@
         show: false,
         scanmode: true,
         information: [],
+        information_cn: [
+          { Like: '爱好' },
+          { Career: '职业' },
+          { Area: '地区' },
+          { Age: '年龄' },
+          { Sex: '性别' },
+          { Autograph: '签名' }
+        ],
         avatarList: [],
         changeflag: false,
         changeAvatarFlag: false
@@ -269,7 +277,6 @@
           bottom: 0;
           right: -64px;
           width: 64px;
-          background: #f3f5f7;
           z-index: 200;
           .avatar-item {
             box-sizing: border-box;
@@ -344,6 +351,7 @@
         bottom: 0;
         right: 100px;
         padding: 0 0 5px 0;
+        max-width: 375px;
         font-size: 16px;
         z-index: 100;
         background: #fff;

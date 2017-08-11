@@ -1,11 +1,13 @@
 <template>
-  <div>
+  <div class="room">
     <v-header :username="username" :userAvatar="userAvatar" :avatarDetail="userAvatarDetail"></v-header>
     <!-- <router-link to="public"></router-link> -->
     <!-- <router-link to="private"></router-link> -->
     <router-link to="/room/username/public"></router-link>
     <router-link to="/room/usernanme/private/chatuser"></router-link>
-    <router-view></router-view>
+    <transition name="slide" mode="out-in">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -65,5 +67,13 @@
 </script>
 
 <style lang="less">
-  
+  .room{
+    .slide-enter,
+    .slide-leave-active{
+      opacity: 0;
+    }
+    .slide-enter-active,.slide-leave-active{
+      transition: all .3s linear;
+    }
+  }
 </style>

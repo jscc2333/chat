@@ -12,7 +12,7 @@
         </div>
         <div class="password">
           <label for="password">密码:</label>
-          <input type="password" id="password" v-model="password" @keyup.enter="submit" placeholder="请输入密码">
+          <input type="password" id="password" v-model="password" @keyup.enter="submit($event)" placeholder="请输入密码">
         </div>
         <transition name="move">
           <div class="confirm-password" v-show="regist">
@@ -86,6 +86,7 @@
       submit(event) {
         if (!this.submitNumber) {
           this.submitNumber += 1;
+          console.log(this.submitNumber);
         } else {
           return;
         }

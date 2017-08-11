@@ -20,7 +20,8 @@
         username: '',
         chatuser: '',
         unReceivedMsg: [],
-        messageCount: []
+        messageCount: [],
+        clickTime: 0
       };
     },
     components: {
@@ -62,7 +63,12 @@
         this.$root.eventHub.$emit('closeInformation');
       },
       goBack() {
-        router.go(-1);
+        if (!this.clickTime) {
+          this.clickTime += 1;
+          router.go(-1);
+        } else {
+          return;
+        }
       },
       unloadHandler() {
         this.$socket.emit('iamOffline', { 'username': this.username });

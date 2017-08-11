@@ -12,9 +12,10 @@
       <chatbox :username="username" :newuser="newuser" :roomType="1"></chatbox>
       <transition name="slide">
         <div class="information" v-show="show">
+          <img :src="otherAvatar" alt="头像">
           <ul>
             <li v-for="(infoItem,infoIndex) in information" :key="infoIndex" class="info-item">
-              <span class="info-type">{{infoItem.type}}</span>
+              <span class="info-type">{{information_cn[infoIndex][infoItem.type]}}</span>
               <span class="info-value">{{infoItem.value}}</span>
             </li>
           </ul>
@@ -39,7 +40,16 @@
         newuser: '',
         messageCount: [],
         timer: null,
+        otherAvatar: '',
         information: [],
+        information_cn: [
+          { Autograph: '签名' },
+          { Sex: '性别' },
+          { Age: '年龄' },
+          { Area: '地区' },
+          { Career: '职业' },
+          { Like: '爱好' }
+        ],
         show: false,
         showIndex: -1
       };
@@ -97,7 +107,6 @@
         }
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
-          console.log(userIndex, this.showIndex);
           if (this.show && userIndex === this.showIndex) {
             this.goPrivate(event, userIndex);
             return;
@@ -167,7 +176,9 @@
       },
       // 获取在线人员信息
       provOtherInformation(data) {
-        for (let item in data) {
+        let information = data.information;
+        this.otherAvatar = data.avatar;
+        for (let item in information) {
           // 添加信息项标志位
           let pushFlag = 0;
           // 需要更新数据项索引
@@ -184,13 +195,13 @@
             // 如果都不等于该信息项，新增
             this.information.push({
               type: item,
-              value: data[item]
+              value: information[item]
             });
           } else {
             // 更新信息
             Vue.set(this.information, updateIndex, {
               type: item,
-              value: data[item]
+              value: information[item]
             });
           }
         }
@@ -256,10 +267,12 @@
         &.slide-leave-active {
           transition: all .3s linear;
         }
+        text-align: center;
         .info-item {
           padding: 10px 0;
           margin: 0 10px;
           border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+          text-align: left;
           &:last-child {
             border: none;
           }
