@@ -211,6 +211,7 @@
       border-bottom: 1px solid rgba(0, 0, 0, 0.3);
       overflow: hidden;
       z-index: 1;
+  
       &.private {
         left: 0
       }
@@ -239,15 +240,15 @@
       }
     }
     .message-input {
-      position: fixed;
       display: flex;
+      position: fixed;
       bottom: 0;
       right: 0;
+      height:40px;
       box-sizing: border-box;
       padding: 8px 0 5px 0;
-      height: 40px;
       background: #f3f5f7;
-      z-index:41;
+      z-index: 41;
       &.private {
         left: 0
       }

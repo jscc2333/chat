@@ -1,7 +1,6 @@
 <template>
-  <div class="private">
-    <v-header :username="username" :userAvatar="1"></v-header>
-    <div class="room-wrapper">
+  <div class="private-room">
+    <div class="room-wrapper" @click="hideInformation()">
       <chatbox :chatuser="chatuser" :roomType="0" :username="username" :unReceivedMsg="unReceivedMsg"></chatbox>
       <img src="../../assets/back.png" width="18" height="18" class="back" @click="goBack">
     </div>
@@ -59,6 +58,9 @@
       window.removeEventListener('unload', this.unloadHandler);
     },
     methods: {
+      hideInformation() {
+        this.$root.eventHub.$emit('closeInformation');
+      },
       goBack() {
         router.go(-1);
       },
@@ -70,7 +72,7 @@
 </script>
 
 <style lang="less">
-  .private {
+  .private-room {
     .room-wrapper {
       position: absolute;
       top: 44px;

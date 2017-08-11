@@ -46,18 +46,6 @@
       window.addEventListener('unload', this.unloadHandler);
     },
     methods: {
-
-      // 进入私聊房间
-      goPrivate(event, userIndex) {
-        // if (!event._constructed) {
-        //   return;
-        // }
-        this.showIndex = -1;
-        this.show = false;
-        clearTimeout(this.timer);
-        this.$root.eventHub.$emit('sendAvatar', this.userAvatar);
-        router.push(`${this.username}/private/${this.userList[userIndex]}`);
-      },
       unloadHandler(e) {
         this.$socket.emit('iamOffline', { 'username': this.username });
       }

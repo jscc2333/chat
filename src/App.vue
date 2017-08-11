@@ -16,6 +16,7 @@ export default {
 
 <style lang="less">
 #app {
+  height: 100%;
   .router-enter-active,
   .router-leave-active {
     transition: all .5s linear;

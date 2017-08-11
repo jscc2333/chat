@@ -1,5 +1,5 @@
 <template>
-  <div class="public">
+  <div class="public-room">
     <div class="user-wrapper" ref="userWrapper">
       <ul>
         <li tag="li" v-for="(user,userIndex) in userList" :key="userIndex" class="user-item" @click="scanInformation($event,userIndex)" @dblclick="goPrivate($event,userIndex)" ref="user">
@@ -28,11 +28,13 @@
   import Vue from 'vue';
   import BScroll from 'better-scroll';
   import chatbox from '../chatbox/chatbox.vue';
+  import router from '../../router';
   import { loadMessage } from '../../common/js/store.js';
 
   export default {
     data() {
       return {
+        username: '',
         userList: [],
         newuser: '',
         messageCount: [],
@@ -42,15 +44,11 @@
         showIndex: -1
       };
     },
-    props: {
-      username: {
-        type: String
-      }
-    },
     components: {
       chatbox
     },
     created() {
+      this.username = this.$route.params.username;
       // 获取用户列表
       this.$socket.emit('fetchList', { 'username': this.username });
       // 广播上线消息
@@ -127,6 +125,17 @@
         this.showIndex = -1;
         this.show = false;
         this.$root.eventHub.$emit('closeInformation');
+      },
+      // 进入私聊房间
+      goPrivate(event, userIndex) {
+        // if (!event._constructed) {
+        //   return;
+        // }
+        this.showIndex = -1;
+        this.show = false;
+        clearTimeout(this.timer);
+        this.$root.eventHub.$emit('sendAvatar', this.userAvatar);
+        router.push(`/room/${this.username}/private/${this.userList[userIndex]}`);
       }
     },
     sockets: {
@@ -192,7 +201,7 @@
 </script>
 
 <style lang="less">
-  .public {
+  .public-room {
     display: flex;
     position: absolute;
     top: 44px;
